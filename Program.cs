@@ -5,14 +5,14 @@ namespace CarSpecJSON
 {
 	internal class Program
 	{
-        static string version = "version 1.6 ";
+        static string version = "version 1.7 ";
         static void Main(string[] args)
 		{
 			
 			string bname = "blekenbleu";
 			string pname = "Haptics";
 //			string myfile = $"D:/my/SimHub/PluginsData/{pname}.{Environment.UserName}.json";
-			string myfile = $"D:/my/SimHub/PluginsData/{pname}.Atlas_engine_data.json";
+			string myfile = $"D:/my/SimHub/PluginsData/Haptics.demas.json";		// 13 Aug 2024
 			string mysource = "R:/Temp/New.cs";
 
 			if (args.Length > 1 )
