@@ -8,10 +8,11 @@ namespace CarSpecJSON
 
 		static void Main(string[] args)
 		{
-			string version = "version 1.4 ";
+			string version = "version 1.5 ";
 			string bname = "blekenbleu";
 			string pname = "Haptics";
-			string myfile = $"D:/my/SimHub/PluginsData/{pname}.{Environment.UserName}.json";
+//			string myfile = $"D:/my/SimHub/PluginsData/{pname}.{Environment.UserName}.json";
+			string myfile = $"D:/my/SimHub/PluginsData/{pname}.Atlas_engine_data.json";
 			string mysource = "R:/Temp/New.cs";
 
 			if (args.Length > 1 )
@@ -42,10 +43,10 @@ namespace CarSpecJSON
 
         readonly string[] sname = ["name", "category", "config", "order", "loc", "drive"];
         readonly string[] uname = ["idlerpm", "redline", "maxrpm", "cyl", "hp", "ehp", "cc", "nm"];
-		string source = "AtlasDict = new()\n{";
+		string source = "namespace blekenbleu\n{\npublic partial class CarSpec\n{\nDictionary<string, List<CarSpec>> AtlasDict = new()\n{";
 		void Sadd(int index, string? value)
 		{
-			if (null == value || 0 == value.Length)
+			if (null == value || 0 == value.Length || "?" == value)
 				return;
 			source += $",\n\t\t\t{sname[index]} = \"{value}\"";
 		}
@@ -73,12 +74,23 @@ namespace CarSpecJSON
 						source += "\n\t\t},\n";
                     source += $"\t\tnew() {{\n\t\t\tid = \"{car.id}\"";
 					Sadd(0, car.name);
+					Sadd(1, car.category);
 					Uadd(0, car.idlerpm);
+					Uadd(1, car.redline);
+					Uadd(2, car.maxrpm);
+					Sadd(2, car.config);
+					Uadd(3, car.cyl);
+					Sadd(3, car.order);
+					Sadd(4, car.loc);
+					Sadd(5, car.drive);
+					Uadd(4, car.hp);
+					Uadd(5, car.ehp);
+					Uadd(6, car.cc);
+					Uadd(7, car.nm);
                     firstcar = false;
                 }
-//				source += "\n\t\t}";
 			}
-			source += "\n\t\t}\n\t}\n}";
+			source += "\n\t\t}\n\t}\n}\t//AtlasDict\n}\t//class CarSpec\n}\t//blekenbleu";
 			File.WriteAllText(file, source);
 			return source;
 		}
