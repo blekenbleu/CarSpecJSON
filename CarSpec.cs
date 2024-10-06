@@ -21,7 +21,7 @@
 	}   // class CarSpec
 }
 
-/* Atlas JSON sample
+/* Atlas sample JSON, C#
 {
   "AC": [
 	{
@@ -43,32 +43,31 @@
 	}
   ]
 }
-	public Dictionary<string, List<CarSpec>> AtlasDict;
-	public CarSpecAtlas()
-	{
-		AtlasDict = new()
-		{
-			{					   // first game list
-				"game1", new () {   // first CarSpec
-					new() {
-						id = "fe",
-						cyl = 2
-					}
-				}
-			},
-			{					   // next game list
-				"game2", new () {
-					new() {
-						id = "fi",
-						cyl = 4
-					},
-					new() {
-						id = "fo",
-						cyl = 8,
-						idlerpm = 700
-					}
-				}
-			}
-		};						  // AtlasDict
-	}
+
+Dictionary<string, List<CarSpec>> AtlasDict = new() {
+	["foo"] = [
+        new() {
+            id = "ks_abarth500_assetto_corse",
+            name = "Abarth 500 Assetto Corse",
+            config = "I",
+            cyl = 4,
+            loc = "F",
+            drive = "F",
+            hp = 197,
+            cc = 1368,
+            nm = 302
+        },
+        new() {
+            id = "ks_abarth500_assetto_corse",
+            name = "Abarth 500 Assetto Corse",
+            config = "I",
+            cyl = 4,
+            loc = "F",
+            drive = "F",
+            hp = 197,
+            cc = 1368,
+            nm = 302
+        }
+    ]
+}
  */

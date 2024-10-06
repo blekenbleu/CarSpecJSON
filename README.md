@@ -6,4 +6,6 @@
     - [iterate list](https://www.tutorialsteacher.com/articles/foreach-loop-in-csharp)  
 	- test each nullable `CarSpec` member; ignore if null or empty string or zero value.
 - *6 Oct*
-	- `blekenbleu.Main(D:/my/SimHub/PluginsData/Haptics.Atlas_engine_data.json): 937140 source length`
+	- escape quotes in strings
+	- Dictionary initialization syntax
+	- `blekenbleu.Main(D:/my/SimHub/PluginsData/Haptics.Atlas_engine_data.json): 937099 source length`

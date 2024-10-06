@@ -5,10 +5,10 @@ namespace CarSpecJSON
 {
 	internal class Program
 	{
-
-		static void Main(string[] args)
+        static string version = "version 1.6 ";
+        static void Main(string[] args)
 		{
-			string version = "version 1.5 ";
+			
 			string bname = "blekenbleu";
 			string pname = "Haptics";
 //			string myfile = $"D:/my/SimHub/PluginsData/{pname}.{Environment.UserName}.json";
@@ -31,7 +31,7 @@ namespace CarSpecJSON
 						JsonConvert.DeserializeObject<Dictionary<string, List<CarSpec>>>(text);
 					if (null != json)
 					{
-						Console.WriteLine(version + bname + ".Main():  JsonConvert non-null " + myfile);
+						Console.WriteLine(Program.version + bname + ".Main():  JsonConvert non-null " + myfile);
                         Console.WriteLine(bname + $".Main({myfile}): "
 										// force non-null
 							+ $"{P.JtoSource(json!, mysource).Length} source length");
@@ -43,12 +43,15 @@ namespace CarSpecJSON
 
         readonly string[] sname = ["name", "category", "config", "order", "loc", "drive"];
         readonly string[] uname = ["idlerpm", "redline", "maxrpm", "cyl", "hp", "ehp", "cc", "nm"];
-		string source = "namespace blekenbleu\n{\npublic partial class CarSpec\n{\nDictionary<string, List<CarSpec>> AtlasDict = new()\n{";
+		string source = "namespace blekenbleu\t// "+version+"\n{\npublic partial class CarSpecAtlas\n{\nreadonly Dictionary<string, List<CarSpec>> AtlasDict = new() {\n";
 		void Sadd(int index, string? value)
 		{
 			if (null == value || 0 == value.Length || "?" == value)
 				return;
-			source += $",\n\t\t\t{sname[index]} = \"{value}\"";
+			string temp = value.Replace("\"", "\\\"");
+			value = temp.Replace("\n", "");
+			temp = value.Replace("\r", "");
+			source += $",\n\t\t\t{sname[index]} = \"{temp}\"";
 		}
 
         void Uadd(int index, ushort? value)
@@ -64,9 +67,9 @@ namespace CarSpecJSON
 			foreach (var game in atlas)
 			{
 				if (!firstgame)
-					source += "\n\t\t}\n\t},";
+					source += "\n\t\t}\n\t],\n";
                 firstgame = false;
-				source += $"\n\t\"{game.Key}\", new() {{\n ";
+				source += $"\t[\"{game.Key}\"] = [\n";
 				bool firstcar = true;
                 foreach (var car in game.Value)
 				{
@@ -90,7 +93,7 @@ namespace CarSpecJSON
                     firstcar = false;
                 }
 			}
-			source += "\n\t\t}\n\t}\n}\t//AtlasDict\n}\t//class CarSpec\n}\t//blekenbleu";
+			source += "\n\t\t}\n\t]\n};\t//AtlasDict\n}\t//class CarSpecAtlas\n}\t//blekenbleu";
 			File.WriteAllText(file, source);
 			return source;
 		}
