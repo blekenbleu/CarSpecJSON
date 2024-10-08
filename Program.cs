@@ -1,18 +1,19 @@
 ﻿using Newtonsoft.Json;
+using System;
 using blekenbleu;
 
 namespace CarSpecJSON
 {
 	internal class Program
 	{
-        static string version = "version 1.7 ";
+        static string version = "version 1.8 ";
         static void Main(string[] args)
 		{
 			
 			string bname = "blekenbleu";
 			string pname = "Haptics";
-//			string myfile = $"D:/my/SimHub/PluginsData/{pname}.{Environment.UserName}.json";
-			string myfile = $"D:/my/SimHub/PluginsData/Haptics.demas.json";		// 13 Aug 2024
+			string myfile = $"D:/my/SimHub/PluginsData/{pname}.{Environment.UserName}.json";
+//			string myfile = $"D:/my/SimHub/PluginsData/Haptics.demas.json";		// 13 Aug 2024
 			string mysource = "R:/Temp/New.cs";
 
 			if (args.Length > 1 )
@@ -34,7 +35,8 @@ namespace CarSpecJSON
 						Console.WriteLine(Program.version + bname + ".Main():  JsonConvert non-null " + myfile);
                         Console.WriteLine(bname + $".Main({myfile}): "
 										// force non-null
-							+ $"{P.JtoSource(json!, mysource).Length} source length");
+//							+ $"{P.JtoSource(json!, mysource).Length} source length");
+							+ $"\n{P.SortGameLengths(json!, mysource)}");
                     }
 				} else Console.WriteLine(bname + ".Main():  null " + myfile);
 			}
@@ -54,12 +56,41 @@ namespace CarSpecJSON
 			source += $",\n\t\t\t{sname[index]} = \"{temp}\"";
 		}
 
-        void Uadd(int index, ushort? value)
+        void Uadd(int index, string? value)
         {
-			if (null == value || 0 == value)
+			if (null == value || 0 == value.Length || "?" == value)
 				return;
             source += $",\n\t\t\t{uname[index]} = {value}";
         }
+
+		string JtoArray(Dictionary<string, List<CarSpec>> atlas, string file)
+		{
+			bool firstgame = true;
+			foreach (var game in atlas)
+			{
+			}
+			return "";
+		} 
+
+		string SortGameLengths(Dictionary<string, List<CarSpec>> atlas, string file)
+		{
+			ushort[] size = new ushort[atlas.Count];
+			ushort[] index = new ushort[atlas.Count];
+			string[] gname = new string[atlas.Count];
+			ushort i = 0;
+			foreach (var game in atlas)
+			{
+				gname[i] = game.Key;
+				index[i] = i;
+                size[i++] = (ushort)game.Value.Count;
+			}
+			Array.Sort(size, index);
+			string str = $"{{ {index[0]}, {size[0]}, {gname[0]}";
+			for (i = 1; i < index.Length; i++)
+				str +=  $",\n  {index[i]}, {size[i]}, {gname[i]}";
+
+			return str + "\n}";
+		}
 
 		string JtoSource(Dictionary<string, List<CarSpec>> atlas, string file)
 		{
@@ -97,5 +128,41 @@ namespace CarSpecJSON
 			File.WriteAllText(file, source);
 			return source;
 		}
-	}
+
+		readonly Dictionary<string, List<CarSpec>> AtlasDict = new() {
+    ["AC"] = [
+        new() {
+            id = "ks_abarth500_assetto_corse",
+            name = "Abarth 500 Assetto Corse",
+            category = "Kunos",
+            idlerpm = "1250",
+            redline = "6000",
+            maxrpm = "6500",
+            config = "I",
+            cyl = "4",
+            order = "1-3-4-2",
+            loc = "F",
+            drive = "F",
+            hp = "197",
+            cc = "1368",
+            nm = "302"
+        },
+        new() {
+            id = "ks_abarth500_assetto_corse",
+            name = "Abarth 500 Assetto Corse",
+            category = "Kunos",
+            idlerpm = "4500",
+            redline = "6000",
+            maxrpm = "6500",
+            config = "I",
+            cyl = "4",
+            order = "1-3-4-2",
+            loc = "F",
+            drive = "F",
+            hp = "197",
+            cc = "1368",
+            nm = "302"
+        }
+	]};
+	}	// class
 }
