@@ -6,8 +6,8 @@ namespace CarSpecJSON
 {
 	internal class Program
 	{
-        static string version = "version 1.8 ";
-        static void Main(string[] args)
+		static string version = "version 1.9 ";
+		static void Main(string[] args)
 		{
 			
 			string bname = "blekenbleu";
@@ -33,19 +33,22 @@ namespace CarSpecJSON
 					if (null != json)
 					{
 						Console.WriteLine(Program.version + bname + ".Main():  JsonConvert non-null " + myfile);
-                        Console.WriteLine(bname + $".Main({myfile}): "
+						Console.WriteLine(bname + $".Main({myfile}): "
 										// force non-null
-//							+ $"{P.JtoSource(json!, mysource).Length} source length");
-							+ $"\n{P.SortGameLengths(json!, mysource)}");
-                    }
+							+ $"\n{P.SortGameLengths(json!, mysource)}"
+							+ $"\n{P.JtoSource(json!, mysource).Length} Dictionary source length"
+						);
+					}
 				} else Console.WriteLine(bname + ".Main():  null " + myfile);
 			}
 			else Console.WriteLine(bname + ".Main():  " + myfile + " not found");
 		}
 
-        readonly string[] sname = ["name", "category", "config", "order", "loc", "drive"];
-        readonly string[] uname = ["idlerpm", "redline", "maxrpm", "cyl", "hp", "ehp", "cc", "nm"];
+		readonly string[] sname = ["name", "category", "config", "order", "loc", "drive"];
+		readonly string[] uname = ["idlerpm", "redline", "maxrpm", "cyl", "hp", "ehp", "cc", "nm"];
 		string source = "namespace blekenbleu\t// "+version+"\n{\npublic partial class CarSpecAtlas\n{\nreadonly Dictionary<string, List<CarSpec>> AtlasDict = new() {\n";
+		ushort[] Sorted = new ushort[1];
+
 		void Sadd(int index, string? value)
 		{
 			if (null == value || 0 == value.Length || "?" == value)
@@ -56,12 +59,12 @@ namespace CarSpecJSON
 			source += $",\n\t\t\t{sname[index]} = \"{temp}\"";
 		}
 
-        void Uadd(int index, string? value)
-        {
+		void Uadd(int index, string? value)
+		{
 			if (null == value || 0 == value.Length || "?" == value)
 				return;
-            source += $",\n\t\t\t{uname[index]} = {value}";
-        }
+			source += $",\n\t\t\t{uname[index]} = {value}";
+		}
 
 		string JtoArray(Dictionary<string, List<CarSpec>> atlas, string file)
 		{
@@ -74,39 +77,44 @@ namespace CarSpecJSON
 
 		string SortGameLengths(Dictionary<string, List<CarSpec>> atlas, string file)
 		{
+            Sorted = new ushort[atlas.Count];
 			ushort[] size = new ushort[atlas.Count];
-			ushort[] index = new ushort[atlas.Count];
 			string[] gname = new string[atlas.Count];
 			ushort i = 0;
 			foreach (var game in atlas)
 			{
 				gname[i] = game.Key;
-				index[i] = i;
-                size[i++] = (ushort)game.Value.Count;
+				Sorted[i] = i;
+				size[i++] = (ushort)game.Value.Count;
 			}
-			Array.Sort(size, index);
-			string str = $"{{ {index[0]}, {size[0]}, {gname[0]}";
-			for (i = 1; i < index.Length; i++)
-				str +=  $",\n  {index[i]}, {size[i]}, {gname[i]}";
+			Array.Sort(size, Sorted);
+			string str = $"{{ {Sorted[0]}, {size[0]}, {gname[0]}";
+			for (i = 1; i < Sorted.Length; i++)
+				str +=  $",\n  {Sorted[i]}, {size[i]}, {gname[i]}";
 
 			return str + "\n}";
 		}
 
 		string JtoSource(Dictionary<string, List<CarSpec>> atlas, string file)
 		{
-			bool firstgame = true;
-			foreach (var game in atlas)
+			int n = Sorted.Length - 1;
+			string s = "\n\treadonly ushort[] Up = new ushort [] {\n\t\t" + Sorted[n].ToString();
+
+			for(int i = 0; i <= n; i++)
 			{
-				if (!firstgame)
+				if (0 < i) {
 					source += "\n\t\t}\n\t],\n";
-                firstgame = false;
+					s += ","+Sorted[n- i].ToString();
+				}
+				//				firstgame = false;
+				var game = atlas.ElementAt(Sorted[n- i]);	// largest first
 				source += $"\t[\"{game.Key}\"] = [\n";
 				bool firstcar = true;
-                foreach (var car in game.Value)
+				foreach (var car in game.Value)
 				{
 					if (!firstcar)
 						source += "\n\t\t},\n";
-                    source += $"\t\tnew() {{\n\t\t\tid = \"{car.id}\"";
+					source += $"\t\tnew() {{\n\t\t\tid = \"{car.id}\"";
 					Sadd(0, car.name);
 					Sadd(1, car.category);
 					Uadd(0, car.idlerpm);
@@ -121,48 +129,49 @@ namespace CarSpecJSON
 					Uadd(5, car.ehp);
 					Uadd(6, car.cc);
 					Uadd(7, car.nm);
-                    firstcar = false;
-                }
+					firstcar = false;
+				}
 			}
-			source += "\n\t\t}\n\t]\n};\t//AtlasDict\n}\t//class CarSpecAtlas\n}\t//blekenbleu";
+			
+			source += "\n\t\t}\n\t]\n};\t//AtlasDict\n" + s + "\n\t};\n}\t//class CarSpecAtlas\n}\t//blekenbleu";
 			File.WriteAllText(file, source);
 			return source;
 		}
 
 		readonly Dictionary<string, List<CarSpec>> AtlasDict = new() {
-    ["AC"] = [
-        new() {
-            id = "ks_abarth500_assetto_corse",
-            name = "Abarth 500 Assetto Corse",
-            category = "Kunos",
-            idlerpm = "1250",
-            redline = "6000",
-            maxrpm = "6500",
-            config = "I",
-            cyl = "4",
-            order = "1-3-4-2",
-            loc = "F",
-            drive = "F",
-            hp = "197",
-            cc = "1368",
-            nm = "302"
-        },
-        new() {
-            id = "ks_abarth500_assetto_corse",
-            name = "Abarth 500 Assetto Corse",
-            category = "Kunos",
-            idlerpm = "4500",
-            redline = "6000",
-            maxrpm = "6500",
-            config = "I",
-            cyl = "4",
-            order = "1-3-4-2",
-            loc = "F",
-            drive = "F",
-            hp = "197",
-            cc = "1368",
-            nm = "302"
-        }
+	["AC"] = [
+		new() {
+			id = "ks_abarth500_assetto_corse",
+			name = "Abarth 500 Assetto Corse",
+			category = "Kunos",
+			idlerpm = "1250",
+			redline = "6000",
+			maxrpm = "6500",
+			config = "I",
+			cyl = "4",
+			order = "1-3-4-2",
+			loc = "F",
+			drive = "F",
+			hp = "197",
+			cc = "1368",
+			nm = "302"
+		},
+		new() {
+			id = "ks_abarth500_assetto_corse",
+			name = "Abarth 500 Assetto Corse",
+			category = "Kunos",
+			idlerpm = "4500",
+			redline = "6000",
+			maxrpm = "6500",
+			config = "I",
+			cyl = "4",
+			order = "1-3-4-2",
+			loc = "F",
+			drive = "F",
+			hp = "197",
+			cc = "1368",
+			nm = "302"
+		}
 	]};
 	}	// class
 }
