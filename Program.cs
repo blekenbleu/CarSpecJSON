@@ -7,7 +7,7 @@ namespace CarSpecJSON
 {
 	internal class Program
 	{
-		static readonly string version = "version 1.9 ";
+		static readonly string version = "version 1.10 ";
 		static void Main(string[] args)
 		{
 			
@@ -36,7 +36,7 @@ namespace CarSpecJSON
 						Console.WriteLine(Program.version + bname + ".Main():  JsonConvert non-null " + myfile);
 						Console.WriteLine(bname + $".Main({myfile}): "
 										// force non-null
-							+ $"\n{P.SortGameLengths(json!, mysource)}"
+							+ $"\n{P.SortGameLengths(json!)}"
 							+ $"\n{P.JtoSource(json!, mysource).Length} Dictionary source length"
 						);
 					}
@@ -67,7 +67,7 @@ namespace CarSpecJSON
 			source += $",\n\t\t\t{uname[index]} = {value}";
 		}
 
-		string SortGameLengths(Dictionary<string, List<CarSpec>> atlas, string file)
+		string SortGameLengths(Dictionary<string, List<CarSpec>> atlas)
 		{
             Sorted = new ushort[atlas.Count];
 			ushort[] size = new ushort[atlas.Count];
@@ -90,7 +90,7 @@ namespace CarSpecJSON
 		string JtoSource(Dictionary<string, List<CarSpec>> atlas, string file)
 		{
 			int n = Sorted.Length - 1;
-			string s = "\nreadonly ushort[] Up = new [" + Sorted[n].ToString();
+			string s = "\nreadonly ushort[] Up = [" + Sorted[n].ToString();
 
 			for(int i = 0; i <= n; i++)
 			{
@@ -126,30 +126,40 @@ namespace CarSpecJSON
 			}
 			
 			source += "\n\t\t}\n\t]\n};\t//AtlasDict\n" + s + "];\n\n"
-					+ "byte[][] cs = new " + CarByte(atlas.ElementAt(Sorted[n]).Value[0])
-					+"\n}\t//class CarSpecAtlas\n}\t//blekenbleu";
+					+ "byte[][] cs = " + CarByte(atlas.ElementAt(Sorted[n]).Value[0])
+					+";\n}\t//class CarSpecAtlas\n}\t//blekenbleu";
 			File.WriteAllText(file, source);
 			return source;
 		}
 
-		private byte[] ToBytes(string? c)
+		private static byte[] ToBytes(string? c)
 		{
 			return (null == c || (1 == c.Length && ("?" == c || "0" == c))) ? [0] : Encoding.ASCII.GetBytes(c!);
 		}
 
-		private string ByteString(string? c)
+		private static string ByteString(string? c)
 		{
 			byte[] spec = ToBytes(c);
-			StringBuilder sb = new StringBuilder($"\n\t[{spec[0]}");
+			StringBuilder sb = new($"\n\t[{spec[0]}");
 			for(int i = 1; i < spec.Length; i++)
 				sb.Append($",{spec[i]}");
 			sb.Append($"],"); // {c}");
 			return sb.ToString();
 		}
 
-		private string CarByte(CarSpec car)
+		private static string LastByteString(string? c)
 		{
-			return "["
+			byte[] spec = ToBytes(c);
+			StringBuilder sb = new($"\n\t[{spec[0]}");
+			for(int i = 1; i < spec.Length; i++)
+				sb.Append($",{spec[i]}");
+			sb.Append("]\n\t}");
+			return sb.ToString();
+		}
+
+		private static string CarByte(CarSpec car)
+		{
+			return "{"
 				+ ByteString(car.id)
 				+ ByteString(car.name)
 				+ ByteString(car.category)
@@ -165,44 +175,7 @@ namespace CarSpecJSON
 				+ ByteString(car.ehp)
 				+ ByteString(car.cc)
 				+ ByteString(car.nm)
-				+ ByteString(car.cc)
-			+"\n];";
+				+ LastByteString(car.cc);
 		}
-
-		readonly Dictionary<string, List<CarSpec>> AtlasDict = new() {
-	["AC"] = [
-		new() {
-			id = "ks_abarth500_assetto_corse",
-			name = "Abarth 500 Assetto Corse",
-			category = "Kunos",
-			idlerpm = "1250",
-			redline = "6000",
-			maxrpm = "6500",
-			config = "I",
-			cyl = "4",
-			order = "1-3-4-2",
-			loc = "F",
-			drive = "F",
-			hp = "197",
-			cc = "1368",
-			nm = "302"
-		},
-		new() {
-			id = "ks_abarth500_assetto_corse",
-			name = "Abarth 500 Assetto Corse",
-			category = "Kunos",
-			idlerpm = "4500",
-			redline = "6000",
-			maxrpm = "6500",
-			config = "I",
-			cyl = "4",
-			order = "1-3-4-2",
-			loc = "F",
-			drive = "F",
-			hp = "197",
-			cc = "1368",
-			nm = "302"
-		}
-	]};
 	}	// class
 }
