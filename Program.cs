@@ -7,7 +7,7 @@ namespace CarSpecJSON
 {
 	internal class Program
 	{
-		static readonly string version = "version 1.10 ";
+		static readonly string version = "version 1.11 ";
 		static void Main(string[] args)
 		{
 			
@@ -90,7 +90,7 @@ namespace CarSpecJSON
 		string JtoSource(Dictionary<string, List<CarSpec>> atlas, string file)
 		{
 			int n = Sorted.Length - 1;
-			string s = "\nreadonly ushort[] Up = [" + Sorted[n].ToString();
+			string s = "\ninternal readonly ushort[] Up = [" + Sorted[n].ToString();
 
 			for(int i = 0; i <= n; i++)
 			{
@@ -126,7 +126,7 @@ namespace CarSpecJSON
 			}
 			
 			source += "\n\t\t}\n\t]\n};\t//AtlasDict\n" + s + "];\n\n"
-					+ "byte[][] cs = " + CarByte(atlas.ElementAt(Sorted[n]).Value[0])
+					+ "internal readonly byte[][][] cs =\n\t" + GameByte(atlas.ElementAt(Sorted[n]).Value)
 					+";\n}\t//class CarSpecAtlas\n}\t//blekenbleu";
 			File.WriteAllText(file, source);
 			return source;
@@ -140,26 +140,36 @@ namespace CarSpecJSON
 		private static string ByteString(string? c)
 		{
 			byte[] spec = ToBytes(c);
-			StringBuilder sb = new($"\n\t[{spec[0]}");
+			StringBuilder sb = new($"[{spec[0]}");
 			for(int i = 1; i < spec.Length; i++)
 				sb.Append($",{spec[i]}");
-			sb.Append($"],"); // {c}");
+			sb.Append($"],\n\t");
 			return sb.ToString();
 		}
 
 		private static string LastByteString(string? c)
 		{
 			byte[] spec = ToBytes(c);
-			StringBuilder sb = new($"\n\t[{spec[0]}");
+			StringBuilder sb = new($"[{spec[0]}");
 			for(int i = 1; i < spec.Length; i++)
 				sb.Append($",{spec[i]}");
-			sb.Append("]\n\t}");
+			sb.Append("]]");
 			return sb.ToString();
+		}
+
+		private static string GameByte(List<CarSpec> carl)
+		{
+			string s = "[";
+			int l = carl.Count - 1;
+
+			for(int i = 1; i < l; i++)
+				s += CarByte(carl[i]) + ",\n\t";
+			return s + CarByte(carl[l]) + "]";
 		}
 
 		private static string CarByte(CarSpec car)
 		{
-			return "{"
+			return "["
 				+ ByteString(car.id)
 				+ ByteString(car.name)
 				+ ByteString(car.category)
