@@ -7,7 +7,9 @@ namespace CarSpecJSON
 {
 	internal class Program
 	{
-		static readonly string version = "version 1.11 ";
+		static readonly string version = "version 1.12 ";
+		string[] gname = [""];
+
 		static void Main(string[] args)
 		{
 			
@@ -47,7 +49,8 @@ namespace CarSpecJSON
 
 		readonly string[] sname = ["name", "category", "config", "order", "loc", "drive"];
 		readonly string[] uname = ["idlerpm", "redline", "maxrpm", "cyl", "hp", "ehp", "cc", "nm"];
-		string source = "namespace blekenbleu\t// "+version+"\n{\npublic partial class CarSpecAtlas\n{\nreadonly Dictionary<string, List<CarSpec>> AtlasDict = new() {\n";
+		string source = "namespace blekenbleu\t// "+version+"\n{\npublic partial class CarSpecAtlas\n{\n"
+						+ "readonly Dictionary<string, List<CarSpec>> AtlasDict = new() {\n";
 		ushort[] Sorted = new ushort[1];
 
 		void Sadd(int index, string? value)
@@ -71,7 +74,7 @@ namespace CarSpecJSON
 		{
             Sorted = new ushort[atlas.Count];
 			ushort[] size = new ushort[atlas.Count];
-			string[] gname = new string[atlas.Count];
+			gname = new string[atlas.Count];
 			ushort i = 0;
 			foreach (var game in atlas)
 			{
@@ -90,7 +93,7 @@ namespace CarSpecJSON
 		string JtoSource(Dictionary<string, List<CarSpec>> atlas, string file)
 		{
 			int n = Sorted.Length - 1;
-			string s = "\ninternal readonly ushort[] Up = [" + Sorted[n].ToString();
+			string s = "\ninternal readonly byte[] Up = [" + Sorted[n].ToString();
 
 			for(int i = 0; i <= n; i++)
 			{
@@ -125,11 +128,21 @@ namespace CarSpecJSON
 				}
 			}
 			
-			source += "\n\t\t}\n\t]\n};\t//AtlasDict\n" + s + "];\n\n"
-					+ "internal readonly byte[][][] cs =\n\t" + GameByte(atlas.ElementAt(Sorted[n]).Value)
+			source += "\n\t\t}\n\t]\n};\t//AtlasDict\n" + s + "];\n"
+					+ GameNames(gname)
+					+ "internal readonly byte[][][][] cs =\n\t" + AllGames(atlas)
 					+";\n}\t//class CarSpecAtlas\n}\t//blekenbleu";
 			File.WriteAllText(file, source);
 			return source;
+		}
+
+		private static string GameNames(string[] gn)
+		{
+			string s = "internal readonly string[] gname = [";
+			int n = gn.Length - 1;
+			for (int i = 0; i < n; i++)
+				s += "\"" + gn[i] + "\",";
+			return s + "\"" + gn[n] + "\"];\n\n";
 		}
 
 		private static byte[] ToBytes(string? c)
@@ -155,6 +168,15 @@ namespace CarSpecJSON
 				sb.Append($",{spec[i]}");
 			sb.Append("]]");
 			return sb.ToString();
+		}
+
+		private static string AllGames(Dictionary<string, List<CarSpec>> atlas)
+		{
+			string s = "[";
+			int c = atlas.Count - 1;
+			for(int j = 0; j < c; j++)
+				s += GameByte(atlas.ElementAt(j).Value) + ",";
+			return s + GameByte(atlas.ElementAt(c).Value) + "]";
 		}
 
 		private static string GameByte(List<CarSpec> carl)

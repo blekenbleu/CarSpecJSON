@@ -10,5 +10,5 @@
 	- Dictionary initialization syntax
 	- `939583 source length`
 - *22 Oct*
-	- byte array instead of dictionary
+	- 4D byte array instead of dictionary
 	- msys64 `strings` utility: `pacman -S mingw-w64-x86_64-binutils`
