@@ -9,21 +9,23 @@ namespace CarSpecJSON
 	{
 		static readonly string version = "version 1.12 ";
 		string[] gname = [""];
+		ushort[] Sorted = new ushort[1];
 
 		static void Main(string[] args)
 		{
 			
 			string bname = "blekenbleu";
-			string pname = "Haptics";
-			string myfile = $"D:/my/SimHub/PluginsData/{pname}.{Environment.UserName}.json";
+//			string pname = "Haptics";
+//			string myfile = $"D:/my/SimHub/PluginsData/{pname}.{Environment.UserName}.json";
 //			string myfile = $"D:/my/SimHub/PluginsData/Haptics.demas.json";		// 13 Aug 2024
+			string myfile = $"D:/my/SimHub/PluginsData/Haptics.B4.json";		// 13 Aug 2024
 			string mysource = "R:/Temp/New.cs";
 
 			if (args.Length > 1 )
 			{
 				myfile = args[1];
 				if (2 < args.Length)
-				mysource = args[2];
+					mysource = args[2];
 			}
 			if (File.Exists(myfile))
 			{
@@ -51,9 +53,8 @@ namespace CarSpecJSON
 		readonly string[] uname = ["idlerpm", "redline", "maxrpm", "cyl", "hp", "ehp", "cc", "nm"];
 		string source = "namespace blekenbleu\t// "+version+"\n{\npublic partial class CarSpecAtlas\n{\n"
 						+ "readonly Dictionary<string, List<CarSpec>> AtlasDict = new() {\n";
-		ushort[] Sorted = new ushort[1];
 
-		void Sadd(int index, string? value)
+		internal void Sadd(int index, string? value)
 		{
 			if (null == value || 0 == value.Length || "?" == value)
 				return;
@@ -63,7 +64,7 @@ namespace CarSpecJSON
 			source += $",\n\t\t\t{sname[index]} = \"{temp}\"";
 		}
 
-		void Uadd(int index, string? value)
+		internal void Uadd(int index, string? value)
 		{
 			if (null == value || 0 == value.Length || "?" == value)
 				return;
@@ -83,9 +84,9 @@ namespace CarSpecJSON
 				size[i++] = (ushort)game.Value.Count;
 			}
 			Array.Sort(size, Sorted);
-			string str = $"{{ {Sorted[0]}, {size[0]}, {gname[0]}";
+			string str = $"{{ {Sorted[0]}, {size[0]}, {gname[Sorted[0]]}";
 			for (i = 1; i < Sorted.Length; i++)
-				str +=  $",\n  {Sorted[i]}, {size[i]}, {gname[i]}";
+				str +=  $",\n  {Sorted[i]}, {size[i]}, {gname[Sorted[i]]}";
 
 			return str + "\n}";
 		}
@@ -93,16 +94,16 @@ namespace CarSpecJSON
 		string JtoSource(Dictionary<string, List<CarSpec>> atlas, string file)
 		{
 			int n = Sorted.Length - 1;
-			string s = "\ninternal readonly byte[] Up = [" + Sorted[n].ToString();
+			string up = "\ninternal readonly byte[] Up = [" + Sorted[0].ToString();
 
 			for(int i = 0; i <= n; i++)
 			{
 				if (0 < i) {
-					source += "\n\t\t}\n\t],\n";
-					s += ","+Sorted[n- i].ToString();
+//					source += "\n\t\t}\n\t],\n";
+					up += ","+Sorted[i].ToString();
 				}
 
-				var game = atlas.ElementAt(Sorted[n- i]);	// largest first
+/*				var game = atlas.ElementAt(Sorted[i]);	// largest first
 				source += $"\t[\"{game.Key}\"] = [\n";
 				bool firstcar = true;
 				foreach (var car in game.Value)
@@ -126,11 +127,13 @@ namespace CarSpecJSON
 					Uadd(7, car.nm);
 					firstcar = false;
 				}
+ */
 			}
 			
-			source += "\n\t\t}\n\t]\n};\t//AtlasDict\n" + s + "];\n"
+//			source += "\n\t\t}\n\t]\n";
+			source += "};\t//AtlasDict\n" + up + "];\n"
 					+ GameNames(gname)
-					+ "internal readonly byte[][][][] cs =\n\t" + AllGames(atlas)
+					+ "internal readonly byte[][][][] cs =\n\t" + AllGames(atlas, Sorted)
 					+";\n}\t//class CarSpecAtlas\n}\t//blekenbleu";
 			File.WriteAllText(file, source);
 			return source;
@@ -170,13 +173,13 @@ namespace CarSpecJSON
 			return sb.ToString();
 		}
 
-		private static string AllGames(Dictionary<string, List<CarSpec>> atlas)
+		private static string AllGames(Dictionary<string, List<CarSpec>> atlas, ushort[] Sorted)
 		{
 			string s = "[";
 			int c = atlas.Count - 1;
 			for(int j = 0; j < c; j++)
-				s += GameByte(atlas.ElementAt(j).Value) + ",";
-			return s + GameByte(atlas.ElementAt(c).Value) + "]";
+				s += GameByte(atlas.ElementAt(Sorted[j]).Value) + ",";
+			return s + GameByte(atlas.ElementAt(Sorted[c]).Value) + "]";
 		}
 
 		private static string GameByte(List<CarSpec> carl)
@@ -206,8 +209,7 @@ namespace CarSpecJSON
 				+ ByteString(car.hp)
 				+ ByteString(car.ehp)
 				+ ByteString(car.cc)
-				+ ByteString(car.nm)
-				+ LastByteString(car.cc);
+				+ LastByteString(car.nm);
 		}
 	}	// class
 }
