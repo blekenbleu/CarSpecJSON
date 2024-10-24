@@ -7,7 +7,7 @@ namespace CarSpecJSON
 {
 	internal class Program
 	{
-		static readonly string version = "version 1.12 ";
+		static readonly string version = "version 1.13 ";
 		string[] gname = [""];
 		ushort[] Sorted = new ushort[1];
 
@@ -51,8 +51,8 @@ namespace CarSpecJSON
 
 		readonly string[] sname = ["name", "category", "config", "order", "loc", "drive"];
 		readonly string[] uname = ["idlerpm", "redline", "maxrpm", "cyl", "hp", "ehp", "cc", "nm"];
-		string source = "namespace blekenbleu\t// "+version+"\n{\npublic partial class CarSpecAtlas\n{\n"
-						+ "readonly Dictionary<string, List<CarSpec>> AtlasDict = new() {\n";
+		string source = "using sierses.Sim;\nusing System.Collections.Generic;\n\n"
+						+ "namespace blekenbleu\t// " + version + "\n{\npublic partial class CarSpecAtlas\n{\n";
 
 		internal void Sadd(int index, string? value)
 		{
@@ -94,7 +94,7 @@ namespace CarSpecJSON
 		string JtoSource(Dictionary<string, List<CarSpec>> atlas, string file)
 		{
 			int n = Sorted.Length - 1;
-			string up = "\ninternal readonly byte[] Up = [" + Sorted[0].ToString();
+			string up = "internal readonly byte[] Up = [" + Sorted[0].ToString();
 
 			for(int i = 0; i <= n; i++)
 			{
@@ -130,10 +130,10 @@ namespace CarSpecJSON
  */
 			}
 			
-//			source += "\n\t\t}\n\t]\n";
-			source += "};\t//AtlasDict\n" + up + "];\n"
+			source += up + "];\n"
 					+ GameNames(gname)
-					+ "internal readonly byte[][][][] cs =\n\t" + AllGames(atlas, Sorted)
+					+ "internal readonly byte[][][][] cs =\n\t"
+					+ AllGames(atlas, Sorted)
 					+";\n}\t//class CarSpecAtlas\n}\t//blekenbleu";
 			File.WriteAllText(file, source);
 			return source;
@@ -148,28 +148,31 @@ namespace CarSpecJSON
 			return s + "\"" + gn[n] + "\"];\n\n";
 		}
 
-		private static byte[] ToBytes(string? c)
-		{
-			return (null == c || (1 == c.Length && ("?" == c || "0" == c))) ? [0] : Encoding.ASCII.GetBytes(c!);
-		}
-
 		private static string ByteString(string? c)
 		{
-			byte[] spec = ToBytes(c);
+			byte[] spec = (null == c || (1 == c.Length && ("?" == c || "0" == c))) ? [0] : Encoding.ASCII.GetBytes(c!);
 			StringBuilder sb = new($"[{spec[0]}");
+
 			for(int i = 1; i < spec.Length; i++)
 				sb.Append($",{spec[i]}");
-			sb.Append($"],\n\t");
+/*			if (1 < spec.Length || 0 < spec[0])
+				sb.Append($"],\t// " + System.Text.Encoding.UTF8.GetString(spec, 0, spec.Length) + "\n\t");
+			else */
+				sb.Append($"],\n\t");
 			return sb.ToString();
 		}
 
 		private static string LastByteString(string? c)
 		{
-			byte[] spec = ToBytes(c);
+			byte[] spec = (null == c || (1 == c.Length && ("?" == c || "0" == c))) ? [0] : Encoding.ASCII.GetBytes(c!);
 			StringBuilder sb = new($"[{spec[0]}");
+
 			for(int i = 1; i < spec.Length; i++)
 				sb.Append($",{spec[i]}");
-			sb.Append("]]");
+/*			if (1 < spec.Length || 0 < spec[0])
+				sb.Append($"]]\t// " + System.Text.Encoding.UTF8.GetString(spec, 0, spec.Length) + "\n\t");
+			else */
+				sb.Append("]]");
 			return sb.ToString();
 		}
 
@@ -178,7 +181,7 @@ namespace CarSpecJSON
 			string s = "[";
 			int c = atlas.Count - 1;
 			for(int j = 0; j < c; j++)
-				s += GameByte(atlas.ElementAt(Sorted[j]).Value) + ",";
+				s += GameByte(atlas.ElementAt(Sorted[j]).Value) + ",\n\t";
 			return s + GameByte(atlas.ElementAt(Sorted[c]).Value) + "]";
 		}
 
@@ -187,7 +190,7 @@ namespace CarSpecJSON
 			string s = "[";
 			int l = carl.Count - 1;
 
-			for(int i = 1; i < l; i++)
+			for(int i = 0; i < l; i++)
 				s += CarByte(carl[i]) + ",\n\t";
 			return s + CarByte(carl[l]) + "]";
 		}
