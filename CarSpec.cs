@@ -1,4 +1,5 @@
-﻿namespace blekenbleu
+﻿
+namespace sierses.Sim
 {
 	public class CarSpec
 	{
@@ -6,18 +7,18 @@
 		public string? game;	// redundant
 		public string? name;
 		public string? category;
-		public string? idlerpm;	// CarSpec element
-		public string? redline;
-		public string? maxrpm;
+		public ushort? idlerpm;	// CarSpec element
+		public ushort? redline;
+		public ushort? maxrpm;
 		public string? config;
-		public string? cyl;
+		public ushort? cyl;
 		public string? order;	// firing order
 		public string? loc;
 		public string? drive;
-		public string? hp;
-		public string? ehp;
-		public string? cc;
-		public string? nm;
+		public ushort? hp;
+		public ushort? ehp;
+		public ushort? cc;
+		public ushort? nm;
 	}   // class CarSpec
 }
 
@@ -45,18 +46,7 @@
 }
 
 Dictionary<string, List<CarSpec>> AtlasDict = new() {
-	["foo"] = [
-        new() {
-            id = "ks_abarth500_assetto_corse",
-            name = "Abarth 500 Assetto Corse",
-            config = "I",
-            cyl = 4,
-            loc = "F",
-            drive = "F",
-            hp = 197,
-            cc = 1368,
-            nm = 302
-        },
+	["AC"] = [
         new() {
             id = "ks_abarth500_assetto_corse",
             name = "Abarth 500 Assetto Corse",
