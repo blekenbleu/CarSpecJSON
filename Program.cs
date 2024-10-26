@@ -6,7 +6,7 @@ namespace CarSpecJSON
 {
 	internal class Program
 	{
-		static readonly string version = "version 1.15 ";
+		static readonly string version = "version 1.16 ";
 		string[] gname = [""];
 		ushort[] Sorted = new ushort[1];
 
@@ -134,7 +134,7 @@ namespace CarSpecJSON
 			source += up + "];\n"
 					+ GameNames(gname)
 					+ "internal readonly byte[][][][] cs =\n\t"
-					+ Barray.AllGames(atlas, Sorted)
+					+ Barray.Ag(atlas, Sorted)
 					+ ";\n}\t//class CarSpecAtlas\n}\t//blekenbleu";
 			File.WriteAllText(file, source);
 			return source;
