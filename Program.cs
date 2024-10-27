@@ -6,7 +6,7 @@ namespace CarSpecJSON
 {
 	internal class Program
 	{
-		static readonly string version = "version 1.16 ";
+		static readonly string version = "version 1.17 ";
 		string[] gname = [""];
 		ushort[] Sorted = new ushort[1];
 
@@ -51,8 +51,7 @@ namespace CarSpecJSON
 
 		readonly string[] sname = ["name", "category", "config", "order", "loc", "drive"];
 		readonly string[] uname = ["idlerpm", "redline", "maxrpm", "cyl", "hp", "ehp", "cc", "nm"];
-		string source = "using sierses.Sim;\nusing System.Collections.Generic;\n\n"
-						+ "namespace blekenbleu\t// " + version + "\n{\npublic partial class CarSpecAtlas\n{\n";
+		string source = "namespace blekenbleu\t// " + version + "\n{\npublic partial class CarSpecAtlas\n{\n";
 
 		internal void Sadd(int index, string? value)
 		{
