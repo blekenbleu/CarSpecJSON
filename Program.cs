@@ -6,7 +6,7 @@ namespace CarSpecJSON
 {
 	internal class Program
 	{
-		static readonly string version = "version 1.17 ";
+		static readonly string version = "version 1.18 ";
 		string[] gname = [""];
 		ushort[] Sorted = new ushort[1];
 
@@ -14,10 +14,11 @@ namespace CarSpecJSON
 		{
 
 			string bname = "blekenbleu";
-			//			string pname = "Haptics";
-			//			string myfile = $"D:/my/SimHub/PluginsData/{pname}.{Environment.UserName}.json";
-			//			string myfile = $"D:/my/SimHub/PluginsData/Haptics.demas.json";		// 13 Aug 2024
-			string myfile = $"D:/my/SimHub/PluginsData/Haptics.B4.json";		// 13 Aug 2024
+			//	string pname = "Haptics";
+			//	string myfile = $"D:/my/SimHub/PluginsData/{pname}.{Environment.UserName}.json";
+			string myfile = $"D:/my/SimHub/PluginsData/Haptics.demas.json";		// 13 Aug 2024
+			//	string myfile = $"D:/my/SimHub/PluginsData/Haptics.B4.json";
+			// string myfile = $"D:/my/SimHub/PluginsData/Haptics.Atlas.json";
 			string mysource = "R:/Temp/New.cs";
 
 			if (args.Length > 1)
