@@ -6,16 +6,13 @@ namespace CarSpecJSON
 {
 	internal class Program
 	{
-		static readonly string version = "version 1.18 ";
+		static readonly string version = "version 1.19 ";
 		string[] gname = [""];
 		ushort[] Sorted = new ushort[1];
 
 		static void Main(string[] args)
 		{
-
 			string bname = "blekenbleu";
-			//	string pname = "Haptics";
-			//	string myfile = $"D:/my/SimHub/PluginsData/{pname}.{Environment.UserName}.json";
 			string myfile = $"D:/my/SimHub/PluginsData/Haptics.demas.json";		// 13 Aug 2024
 			// string myfile = $"D:/my/SimHub/PluginsData/Haptics.Atlas.json";	// missing some order
 			string mysource = "R:/Temp/New.cs";
@@ -51,7 +48,7 @@ namespace CarSpecJSON
 
 		readonly string[] sname = ["name", "category", "config", "order", "loc", "drive"];
 		readonly string[] uname = ["idlerpm", "redline", "maxrpm", "cyl", "hp", "ehp", "cc", "nm"];
-		string source = "namespace blekenbleu\t// " + version + "\n{\npublic partial class CarSpecAtlas\n{\n";
+		string source = "namespace Atlas\t// " + version + "\n{\npublic partial class CarSpecAtlas\n{\n";
 
 		internal void Sadd(int index, string? value)
 		{
@@ -98,43 +95,14 @@ namespace CarSpecJSON
 			for (int i = 0; i <= n; i++)
 			{
 				if (0 < i)
-				{
-					//					source += "\n\t\t}\n\t],\n";
 					up += "," + Sorted[i].ToString();
-				}
-
-				/*				var game = atlas.ElementAt(Sorted[i]);	// largest first
-								source += $"\t[\"{game.Key}\"] = [\n";
-								bool firstcar = true;
-								foreach (var car in game.Value)
-								{
-									if (!firstcar)
-										source += "\n\t\t},\n";
-									source += $"\t\tnew() {{\n\t\t\tid = \"{car.id}\"";
-									Sadd(0, car.name);
-									Sadd(1, car.category);
-									Uadd(0, car.idlerpm);
-									Uadd(1, car.redline);
-									Uadd(2, car.maxrpm);
-									Sadd(2, car.config);
-									Uadd(3, car.cyl);
-									Sadd(3, car.order);
-									Sadd(4, car.loc);
-									Sadd(5, car.drive);
-									Uadd(4, car.hp);
-									Uadd(5, car.ehp);
-									Uadd(6, car.cc);
-									Uadd(7, car.nm);
-									firstcar = false;
-								}
-				 */
 			}
 
 			source += up + "];\n"
 					+ GameNames(gname)
 					+ "internal readonly byte[][][][] cs =\n\t"
 					+ Barray.Ag(atlas, Sorted)
-					+ ";\n}\t//class CarSpecAtlas\n}\t//blekenbleu";
+					+ ";\n}\t//class CarSpecAtlas\n}\t//Atlas";
 			File.WriteAllText(file, source);
 			return source;
 		}
