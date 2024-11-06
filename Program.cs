@@ -17,8 +17,7 @@ namespace CarSpecJSON
 			//	string pname = "Haptics";
 			//	string myfile = $"D:/my/SimHub/PluginsData/{pname}.{Environment.UserName}.json";
 			string myfile = $"D:/my/SimHub/PluginsData/Haptics.demas.json";		// 13 Aug 2024
-			//	string myfile = $"D:/my/SimHub/PluginsData/Haptics.B4.json";
-			// string myfile = $"D:/my/SimHub/PluginsData/Haptics.Atlas.json";
+			// string myfile = $"D:/my/SimHub/PluginsData/Haptics.Atlas.json";	// missing some order
 			string mysource = "R:/Temp/New.cs";
 
 			if (args.Length > 1)
