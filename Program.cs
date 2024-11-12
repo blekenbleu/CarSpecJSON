@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json;
-using blekenbleu;
-using sierses.Sim;
 
-namespace CarSpecJSON
+namespace Atlas
 {
 	internal class Program
 	{
-		static readonly string version = "version 1.20 ";
+		static readonly string version = "version 1.21 ";
 		string[] gname = [""];
 		ushort[] Sorted = new ushort[1];
 

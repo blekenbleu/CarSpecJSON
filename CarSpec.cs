@@ -1,5 +1,4 @@
-﻿
-namespace sierses.Sim
+﻿namespace Atlas
 {
 	public class CarSpec
 	{
